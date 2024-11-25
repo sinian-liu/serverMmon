@@ -108,14 +108,14 @@ server {
     server_name www.133443.xyz;  # 替换为您的域名
 
     location / {
-        proxy_pass http://67.21.68.91:5999;  # 青蛇探针的前台地址
+        proxy_pass http://服务器IP:5999;  # 青蛇探针的前台地址
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
     location /admin {
-        proxy_pass http://67.21.68.91:5999/admin;  # 青蛇探针的后台地址
+        proxy_pass http://服务器IP:5999/admin;  # 青蛇探针的后台地址
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
