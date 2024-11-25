@@ -105,7 +105,7 @@ sudo nano /etc/nginx/sites-available/qingshe
 ```
 server {
     listen 80;
-    server_name www.133443.xyz;  # 替换为您的域名
+    server_name www.你的域名.xyz;  # 替换为您的域名
 
     location / {
         proxy_pass http://服务器IP:5999;  # 青蛇探针的前台地址
