@@ -68,61 +68,80 @@
 * server/config.js   服务端端口配置 其他配置不会的不要改 默认可不做修改             
 
 # 自动部署：
-
-【服务端】
-<s>
-- Docker一键命令：
-
-```
-docker run -dit \
-  -v $PWD/Mmon/basedata:/Mmon/basedata \
-  -p 5999:5999 \
-  --restart=always \
-  --name mmon \
-grbhq/mmon:latest
-```
-
 - docker-compose一键部署：
 
 ```
 wget -O docker-compose.yaml https://raw.githubusercontent.com/souying/serverMmon/main/docker-compose.yaml && docker-compose up -d
 ```  
-</s>
-
-- 一键安装脚本(国内)：  
+- 一键安装脚本：  
 
 ```
-bash <(curl -sL https://cdn.jsdelivr.net/gh/souying/serverMmon@main/scripts/mmon_install.sh)   
-
-```  
-or
-```
-bash <(curl -sL https://gitee.com/souying/serverMmon/raw/main/scripts/mmon_install.sh) 
-```
-- 一键安装脚本(国外)：  
-
-```
-bash <(curl -sL https://raw.githubusercontent.com/souying/serverMmon/main/scripts/mmon_install.sh)  
+bash <(curl -sL https://raw.githubusercontent.com/sinian-liu/serverMmon/main/scripts/mmon_install.sh)  
 
 ```  
 
 【监控端】：
 
 ```
-//国内服务器一键安装脚本  
-
-bash <(curl -sL https://gitee.com/souying/serverMmon/raw/main/scripts/mmon_install.sh)  
-
-or
-bash <(curl -sL https://cdn.jsdelivr.net/gh/souying/serverMmon@main/scripts/mmon_install.sh)  
-
 //国外服务器一键安装脚本  
 
-bash <(curl -sL https://raw.githubusercontent.com/souying/serverMmon/main/scripts/mmon_install.sh) 
+bash <(curl -sL https://raw.githubusercontent.com/sinian-liu/serverMmon/main/scripts/mmon_install.sh) 
 
 以上执行后按脚本提示安装  
 安装完毕后 直接执行mmon 或者 MMON 可弹出脚本菜单  
 ```
+
+# https证书配置教程
+1.安装 Nginx（如果未安装）：
+```
+sudo apt update
+sudo apt install nginx -y
+```
+2.创建配置文件：
+```
+sudo nano /etc/nginx/sites-available/qingshe
+```
+3.添加配置：
+```
+server {
+    listen 80;
+    server_name www.你的域名.xyz;  # 替换为您的域名
+
+    location / {
+        proxy_pass http://服务器IP:5999;  # 青蛇探针的前台地址
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /admin {
+        proxy_pass http://服务器IP:5999/admin;  # 青蛇探针的后台地址
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+4.启用配置并重启 Nginx：
+```
+sudo ln -s /etc/nginx/sites-available/qingshe /etc/nginx/sites-enabled/
+sudo nginx -t  # 测试配置是否正确
+sudo systemctl restart nginx
+```
+5.配置 HTTPS（推荐）
+安装 Certbot：
+```
+sudo apt install certbot python3-certbot-nginx -y
+```
+6.获取证书：
+```
+sudo certbot --nginx -d www.133443.xyz
+```
+7.自动续期： Certbot 会自动配置续期任务，也可以手动测试：
+```
+sudo certbot renew --dry-run
+```
+8.访问测试是否已经生效
 
 # 手动安装教程：
 
